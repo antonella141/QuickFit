@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickFit – Your Closet, Your Choice</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; color:#333; }
+  header { background:#ff4081; color:white; text-align:center; padding:1rem; font-size:1.5rem; }
+  nav { display:flex; justify-content:space-around; background:white; border-bottom:1px solid #ddd; padding:0.5rem 0; }
+  nav a { text-decoration:none; color:#333; font-weight:bold; }
+  main { padding:1rem; }
+  h2 { margin-top:1rem; }
+  .section { margin-bottom:2rem; }
+  .closet, .friends { display:flex; flex-wrap:wrap; gap:1rem; }
+  .card { background:white; padding:1rem; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); width:150px; text-align:center; }
+  .card img { max-width:100%; border-radius:5px; }
+  button { margin-top:0.5rem; padding:0.4rem 0.8rem; border:none; border-radius:5px; cursor:pointer; background:#ff4081; color:white; }
+  footer { text-align:center; padding:1rem; background:#eee; font-size:0.9rem; }
+</style>
+</head>
+<body>
+
+<header>QuickFit – Your Closet, Your Choice</header>
+
+<nav>
+  <a href="#closet">Closet</a>
+  <a href="#suggestions">Daily Suggestions</a>
+  <a href="#friends">Friends</a>
+  <a href="#favorites">Favorites</a>
+</nav>
+
+<main>
+  <div class="section" id="closet">
+    <h2>Your Closet</h2>
+    <input type="file" id="addClothes" multiple>
+    <div class="closet" id="closetDisplay"></div>
+  </div>
+
+  <div class="section" id="suggestions">
+    <h2>Daily Outfit Suggestions</h2>
+    <button onclick="getSuggestion()">Get Suggestion</button>
+    <div id="suggestionDisplay" style="margin-top:1rem;"></div>
+  </div>
+
+  <div class="section" id="friends">
+    <h2>Friends</h2>
+    <input type="text" id="friendName" placeholder="Friend's name">
+    <button onclick="addFriend()">Send Friend Request</button>
+    <div class="friends" id="friendsList"></div>
+  </div>
+
+  <div class="section" id="favorites">
+    <h2>Favorites</h2>
+    <div class="closet" id="favoritesList"></div>
+  </div>
+</main>
+
+<footer>Created by Antonella Gross</footer>
+
+<script>
+  const closetDisplay = document.getElementById('closetDisplay');
+  const favoritesList = document.getElementById('favoritesList');
+  const suggestionDisplay = document.getElementById('suggestionDisplay');
+  const friendsList = document.getElementById('friendsList');
+
+  const closetItems = [];
+  const favorites = [];
+  const friends = [];
+
+  document.getElementById('addClothes').addEventListener('change', function(e){
+    Array.from(e.target.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        const imgSrc = ev.target.result;
+        closetItems.push(imgSrc);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<img src="${imgSrc}"><br><button onclick="addToFavorites('${imgSrc}')">❤️ Favorite</button>`;
+        closetDisplay.appendChild(card);
+      }
+      reader.readAsDataURL(file);
+    });
+  });
+
+  function addToFavorites(src){
+    if(!favorites.includes(src)){
+      favorites.push(src);
+      const card = document.createElement('div');
+      card.className='card';
+      card.innerHTML=`<img src="${src}">`;
+      favoritesList.appendChild(card);
+    }
+  }
+
+  function getSuggestion(){
+    if(closetItems.length===0){
+      suggestionDisplay.innerText = "Upload clothes first!";
+      return;
+    }
+    const randomItem = closetItems[Math.floor(Math.random()*closetItems.length)];
+    suggestionDisplay.innerHTML = `<div class="card"><img src="${randomItem}"><br>Suggested Outfit</div>`;
+  }
+
+  function addFriend(){
+    const name = document.getElementById('friendName').value.trim();
+    if(name && !friends.includes(name)){
+      friends.push(name);
+      const card = document.createElement('div');
+      card.className='card';
+      card.innerHTML=`${name}<br><button onclick="alert('Friend Request Approved!')">Approve</button>`;
+      friendsList.appendChild(card);
+    }
+    document.getElementById('friendName').value='';
+  }
+</script>
+
+</body>
+</html>
